@@ -136,6 +136,14 @@
 
                 // Generate detailed calculation notes for the first Jāmam
                 if (i === 0) {
+                    // Convert total duration and interval duration into hours, minutes, and seconds
+                    let totalHours = Math.floor(totalDurationMinutes / 60);
+                    let totalMinutes = totalDurationMinutes % 60;
+
+                    let intervalHours = Math.floor(intervalDurationMinutes / 60);
+                    let intervalMinutes = Math.floor(intervalDurationMinutes % 60);
+                    let intervalSeconds = Math.floor((intervalDurationMinutes * 60) % 60);
+
                     notes.push(`
                         <div class="note">
                             <strong>Detailed Calculation for Jāmam 1:</strong><br><br>
@@ -143,11 +151,13 @@
                             2. <strong>Calculate the Total Duration:</strong><br>
                                &nbsp;&nbsp;End Time: ${end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})}<br>
                                &nbsp;&nbsp;Total Duration = End Time - Start Time<br>
-                               &nbsp;&nbsp;= ${totalDurationMinutes} minutes<br><br>
+                               &nbsp;&nbsp;= ${totalDurationMinutes} minutes<br>
+                               &nbsp;&nbsp;= ${totalHours} hours and ${totalMinutes} minutes<br><br>
                             3. <strong>Divide the Total Duration by 5:</strong><br>
                                &nbsp;&nbsp;Interval Duration = Total Duration / 5<br>
                                &nbsp;&nbsp;= ${totalDurationMinutes} minutes / 5<br>
-                               &nbsp;&nbsp;= ${intervalDurationMinutes.toFixed(2)} minutes<br><br>
+                               &nbsp;&nbsp;= ${intervalDurationMinutes.toFixed(2)} minutes<br>
+                               &nbsp;&nbsp;= ${intervalHours} hours, ${intervalMinutes} minutes, and ${intervalSeconds} seconds<br><br>
                             4. <strong>Add Interval Duration to Start Time to Find End Time of First Jāmam:</strong><br>
                                &nbsp;&nbsp;= ${startStr} + ${intervalDurationMinutes.toFixed(2)} minutes<br>
                                &nbsp;&nbsp;= ${endStr} (This is the end time for Jāmam 1).
