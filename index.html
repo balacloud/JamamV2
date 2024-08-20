@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jāmam Calculator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        input, button {
+            padding: 10px 15px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        input[type="time"] {
+            background: #ff6a6a;
+            color: #fff;
+            width: 100%;
+        }
+
+        button {
+            background-color: #ffcc00;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #ffaa00;
+        }
+
+        #results, #calculationNotes {
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        .jamam {
+            background-color: #333;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .note {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 1rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Jāmam Calculator</h1>
+        <p>Enter Start Time and End Time:</p>
+        <input type="time" id="startTime" required>
+        <input type="time" id="endTime" required>
+        <button onclick="calculateJamams()">Calculate 5 Jāmams</button>
+
+        <div id="results"></div>
+        <div id="calculationNotes"></div>
+    </div>
+
+    <script>
+        function calculateJamams() {
+            let startTime = document.getElementById('startTime').value;
+            let endTime = document.getElementById('endTime').value;
+            if (!startTime || !endTime) {
+                alert("Please enter both start and end times.");
+                return;
+            }
+
+            // Convert time strings to Date objects
+            let start = new Date(`1970-01-01T${startTime}:00`);
+            let end = new Date(`1970-01-01T${endTime}:00`);
+
+            // Calculate the total duration in milliseconds
+            let totalDuration = end - start;
+
+            // Calculate the duration of each interval (Jāmam)
+            let intervalDuration = totalDuration / 5;
+
+            // Generate the intervals
+            let results = [];
+            let notes = [];
+
+            for (let i = 0; i < 5; i++) {
+                let intervalStart = new Date(start.getTime() + i * intervalDuration);
+                let intervalEnd = new Date(intervalStart.getTime() + intervalDuration);
+
+                // Convert back to time strings with seconds
+                let startStr = intervalStart.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                let endStr = intervalEnd.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+
+                results.push(`<div class="jamam">Jāmam ${i + 1}: ${startStr} - ${endStr}</div>`);
+
+                // Generate calculation notes for the first Jāmam
+                if (i === 0) {
+                    let startHours = start.getHours();
+                    let startMinutes = start.getMinutes();
+                    let startSeconds = start.getSeconds();
+
+                    let intervalHours = Math.floor(intervalDuration / (1000 * 60 * 60));
+                    let intervalMinutes = Math.floor((intervalDuration % (1000 * 60 * 60)) / (1000 * 60));
+                    let intervalSeconds = Math.floor((intervalDuration % (1000 * 60)) / 1000);
+
+                    notes.push(`
+                        <div class="note">
+                            <strong>Calculation for Jāmam 1:</strong><br>
+                            Start Time: ${startHours}:${startMinutes}:${startSeconds} <br>
+                            Interval Duration: ${intervalHours} hours, ${intervalMinutes} minutes, ${intervalSeconds} seconds <br>
+                            End Time: ${startStr} + Interval Duration = ${endStr}
+                        </div>
+                    `);
+                }
+            }
+
+            // Display the results and calculation notes
+            document.getElementById('results').innerHTML = results.join('');
+            document.getElementById('calculationNotes').innerHTML = notes.join('');
+        }
+    </script>
+
+</body>
+</html>
