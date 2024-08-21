@@ -16,22 +16,23 @@
             align-items: center;
             height: 100vh;
             flex-direction: column;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 10px;
             color: #2c3e50;
         }
 
         .container {
             background: rgba(255, 255, 255, 0.8); /* Slightly transparent white background */
-            padding: 20px 30px;
+            padding: 15px 20px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             text-align: center;
-            width: 80%;
-            max-width: 600px;
+            width: 90%;
+            max-width: 500px;
         }
 
         input, button {
@@ -41,6 +42,7 @@
             border-radius: 5px;
             margin: 10px 0;
             width: 100%;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
         }
 
         input[type="time"] {
@@ -85,6 +87,26 @@
 
         .note strong {
             color: #2980b9; /* Bright blue for emphasis */
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                width: 95%;
+                padding: 10px 15px;
+            }
+
+            input, button {
+                font-size: 0.9rem;
+                padding: 8px 10px;
+            }
+
+            #results, #calculationNotes {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -169,6 +191,9 @@
             // Display the results and calculation notes
             document.getElementById('results').innerHTML = results.join('');
             document.getElementById('calculationNotes').innerHTML = notes.join('');
+
+            // Scroll to top of the results section to prevent content cut-off on smaller screens
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
 
