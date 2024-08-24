@@ -126,8 +126,9 @@
             <select id="startHour"></select>
             <select id="startMinute"></select>
             <select id="startSecond"></select>
-            <select disabled>
-                <option>AM</option>
+            <select id="startAmPm">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
             </select>
         </div>
         <div class="time-picker">
@@ -135,8 +136,9 @@
             <select id="endHour"></select>
             <select id="endMinute"></select>
             <select id="endSecond"></select>
-            <select disabled>
-                <option>PM</option>
+            <select id="endAmPm">
+                <option value="PM">PM</option>
+                <option value="AM">AM</option>
             </select>
         </div>
         <button onclick="calculateJamams()">5 ஜாமம் கணக்கிடுங்கள்</button>
@@ -165,17 +167,35 @@
             });
         }
 
+        function formatTime(date) {
+            let hours = date.getHours();
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+            return `${hours.toString().padStart(2, '0')}:${minutes}:${seconds} ${ampm}`;
+        }
+
         function calculateJamams() {
-            const startHour = parseInt(document.getElementById('startHour').value);
+            let startHour = parseInt(document.getElementById('startHour').value);
             const startMinute = parseInt(document.getElementById('startMinute').value);
             const startSecond = parseInt(document.getElementById('startSecond').value);
+            const startAmPm = document.getElementById('startAmPm').value;
 
-            const endHour = parseInt(document.getElementById('endHour').value);
+            let endHour = parseInt(document.getElementById('endHour').value);
             const endMinute = parseInt(document.getElementById('endMinute').value);
             const endSecond = parseInt(document.getElementById('endSecond').value);
+            const endAmPm = document.getElementById('endAmPm').value;
 
-            const start = new Date(1970, 0, 1, startHour === 12 ? 0 : startHour, startMinute, startSecond); // AM: 12 AM -> 0
-            const end = new Date(1970, 0, 1, endHour === 12 ? 12 : endHour + 12, endMinute, endSecond); // PM: 12 PM stays 12
+            // Convert 12-hour time to 24-hour time
+            if (startAmPm === 'PM' && startHour !== 12) startHour += 12;
+            if (startAmPm === 'AM' && startHour === 12) startHour = 0;
+
+            if (endAmPm === 'PM' && endHour !== 12) endHour += 12;
+            if (endAmPm === 'AM' && endHour === 12) endHour = 0;
+
+            const start = new Date(1970, 0, 1, startHour, startMinute, startSecond);
+            const end = new Date(1970, 0, 1, endHour, endMinute, endSecond);
 
             const totalDurationMinutes = (end.getTime() - start.getTime()) / 60000;
             const intervalDurationMinutes = totalDurationMinutes / 5;
@@ -187,8 +207,8 @@
                 const intervalStart = new Date(start.getTime() + i * intervalDurationMinutes * 60000);
                 const intervalEnd = new Date(intervalStart.getTime() + intervalDurationMinutes * 60000);
 
-                const startStr = intervalStart.toTimeString().slice(0, 8); // HH:MM:SS
-                const endStr = intervalEnd.toTimeString().slice(0, 8); // HH:MM:SS
+                const startStr = formatTime(intervalStart);
+                const endStr = formatTime(intervalEnd);
 
                 results.push(`<div class="jamam">ஜாமம் ${i + 1}: ${startStr} - ${endStr}</div>`);
 
@@ -205,14 +225,12 @@
                             <strong>ஜாமம் 1-க்கான விரிவான கணக்கீடு:</strong><br><br>
                             1. <strong>தொடக்க நேரம்:</strong> ${startStr} (நீங்கள் உள்ளிட்ட தொடக்க நேரம்).<br><br>
                             2. <strong>மொத்த காலம் கணக்கிடுங்கள்:</strong><br>
-                               &nbsp;&nbsp;முடிவு நேரம்: ${end.toTimeString().slice(0, 8)}<br>
-                               &nbsp;&nbsp;மொத்த காலம் = முடிவு நேரம் - தொடக்க நேரம்<br>
-                               &nbsp;&nbsp;= ${totalDurationMinutes} நிமிடங்கள்<br>
-                               &nbsp;&nbsp;= ${totalHours} மணி ${totalMinutes} நிமிடங்கள்<br><br>
-                            3. <strong>மொத்த காலத்தை 5-ஆகப் பிரிக்கவும்:</strong><br>
-                               &nbsp;&nbsp;1 ஜாமம் = மொத்த காலம் / 5 = ${intervalDurationMinutes} நிமிடங்கள்<br>
-                               &nbsp;&nbsp;= ${intervalHours} மணி ${intervalMinutes} நிமிடங்கள் ${intervalSeconds} விநாடிகள்<br><br>
-                            4. <strong>ஜாமம் 1 நேரம்:</strong> ${startStr} - ${endStr}
+                               &nbsp;&nbsp;முடிவு நேரம் - தொடக்க நேரம் = மொத்தம்<br>
+                               &nbsp;&nbsp;${endStr} - ${startStr} = ${totalHours} மணி ${totalMinutes} நிமிடம்.<br><br>
+                            3. <strong>ஒரு ஜாமம் நேரம்:</strong> மொத்த நேரம் / 5.<br>
+                               &nbsp;&nbsp;${totalHours} மணி ${totalMinutes} நிமிடம் = ${intervalHours} மணி ${intervalMinutes} நிமிடம் ${intervalSeconds} விநாடிகள்.<br><br>
+                            4. <strong>ஜாமம் 1:</strong> தொடக்க நேரம் + ஜாமம் நேரம்.<br>
+                               &nbsp;&nbsp;${startStr} + ${intervalHours} மணி ${intervalMinutes} நிமிடம் = ${formatTime(intervalEnd)}.
                         </div>
                     `);
                 }
