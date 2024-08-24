@@ -120,20 +120,24 @@
 
     <div class="container">
         <h1>ஜாமம் கணக்கீடு</h1>
-        <p>தொடக்க நேரம் மற்றும் முடிவு நேரத்தை தேர்வு செய்யவும்:</p>
+        <p>தொடக்க நேரம் (AM) மற்றும் முடிவு நேரம் (PM) தேர்வு செய்யவும்:</p>
         <div class="time-picker">
             <label>தொடக்க நேரம் (AM):</label>
             <select id="startHour"></select>
             <select id="startMinute"></select>
             <select id="startSecond"></select>
-            <select id="startMillisecond"></select>
+            <select disabled>
+                <option>AM</option>
+            </select>
         </div>
         <div class="time-picker">
             <label>முடிவு நேரம் (PM):</label>
             <select id="endHour"></select>
             <select id="endMinute"></select>
             <select id="endSecond"></select>
-            <select id="endMillisecond"></select>
+            <select disabled>
+                <option>PM</option>
+            </select>
         </div>
         <button onclick="calculateJamams()">5 ஜாமம் கணக்கிடுங்கள்</button>
 
@@ -145,12 +149,10 @@
         function populateTimeOptions() {
             const hours = [...Array(12).keys()].map(i => i + 1); // 1 to 12
             const minutesSeconds = [...Array(60).keys()];
-            const milliseconds = [...Array(1000).keys()];
 
             const hourSelects = [document.getElementById('startHour'), document.getElementById('endHour')];
             const minuteSelects = [document.getElementById('startMinute'), document.getElementById('endMinute')];
             const secondSelects = [document.getElementById('startSecond'), document.getElementById('endSecond')];
-            const millisecondSelects = [document.getElementById('startMillisecond'), document.getElementById('endMillisecond')];
 
             hours.forEach(hour => {
                 const option = new Option(hour.toString().padStart(2, '0'), hour);
@@ -161,26 +163,19 @@
                 const option = new Option(minuteSecond.toString().padStart(2, '0'), minuteSecond);
                 minuteSelects.concat(secondSelects).forEach(select => select.add(option.cloneNode(true)));
             });
-
-            milliseconds.forEach(ms => {
-                const option = new Option(ms.toString().padStart(3, '0'), ms);
-                millisecondSelects.forEach(select => select.add(option.cloneNode(true)));
-            });
         }
 
         function calculateJamams() {
             const startHour = parseInt(document.getElementById('startHour').value);
             const startMinute = parseInt(document.getElementById('startMinute').value);
             const startSecond = parseInt(document.getElementById('startSecond').value);
-            const startMillisecond = parseInt(document.getElementById('startMillisecond').value);
 
             const endHour = parseInt(document.getElementById('endHour').value);
             const endMinute = parseInt(document.getElementById('endMinute').value);
             const endSecond = parseInt(document.getElementById('endSecond').value);
-            const endMillisecond = parseInt(document.getElementById('endMillisecond').value);
 
-            const start = new Date(1970, 0, 1, startHour === 12 ? 0 : startHour, startMinute, startSecond, startMillisecond); // AM: 12 AM -> 0
-            const end = new Date(1970, 0, 1, endHour === 12 ? 12 : endHour + 12, endMinute, endSecond, endMillisecond); // PM: 12 PM stays 12
+            const start = new Date(1970, 0, 1, startHour === 12 ? 0 : startHour, startMinute, startSecond); // AM: 12 AM -> 0
+            const end = new Date(1970, 0, 1, endHour === 12 ? 12 : endHour + 12, endMinute, endSecond); // PM: 12 PM stays 12
 
             const totalDurationMinutes = (end.getTime() - start.getTime()) / 60000;
             const intervalDurationMinutes = totalDurationMinutes / 5;
@@ -192,8 +187,8 @@
                 const intervalStart = new Date(start.getTime() + i * intervalDurationMinutes * 60000);
                 const intervalEnd = new Date(intervalStart.getTime() + intervalDurationMinutes * 60000);
 
-                const startStr = intervalStart.toTimeString().slice(0, 12);
-                const endStr = intervalEnd.toTimeString().slice(0, 12);
+                const startStr = intervalStart.toTimeString().slice(0, 8); // HH:MM:SS
+                const endStr = intervalEnd.toTimeString().slice(0, 8); // HH:MM:SS
 
                 results.push(`<div class="jamam">ஜாமம் ${i + 1}: ${startStr} - ${endStr}</div>`);
 
@@ -210,7 +205,7 @@
                             <strong>ஜாமம் 1-க்கான விரிவான கணக்கீடு:</strong><br><br>
                             1. <strong>தொடக்க நேரம்:</strong> ${startStr} (நீங்கள் உள்ளிட்ட தொடக்க நேரம்).<br><br>
                             2. <strong>மொத்த காலம் கணக்கிடுங்கள்:</strong><br>
-                               &nbsp;&nbsp;முடிவு நேரம்: ${end.toTimeString().slice(0, 12)}<br>
+                               &nbsp;&nbsp;முடிவு நேரம்: ${end.toTimeString().slice(0, 8)}<br>
                                &nbsp;&nbsp;மொத்த காலம் = முடிவு நேரம் - தொடக்க நேரம்<br>
                                &nbsp;&nbsp;= ${totalDurationMinutes} நிமிடங்கள்<br>
                                &nbsp;&nbsp;= ${totalHours} மணி ${totalMinutes} நிமிடங்கள்<br><br>
