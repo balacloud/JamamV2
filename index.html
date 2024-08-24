@@ -122,14 +122,14 @@
         <h1>ஜாமம் கணக்கீடு</h1>
         <p>தொடக்க நேரம் மற்றும் முடிவு நேரத்தை தேர்வு செய்யவும்:</p>
         <div class="time-picker">
-            <label>தொடக்க நேரம்:</label>
+            <label>தொடக்க நேரம் (AM):</label>
             <select id="startHour"></select>
             <select id="startMinute"></select>
             <select id="startSecond"></select>
             <select id="startMillisecond"></select>
         </div>
         <div class="time-picker">
-            <label>முடிவு நேரம்:</label>
+            <label>முடிவு நேரம் (PM):</label>
             <select id="endHour"></select>
             <select id="endMinute"></select>
             <select id="endSecond"></select>
@@ -143,7 +143,7 @@
 
     <script>
         function populateTimeOptions() {
-            const hours = [...Array(24).keys()];
+            const hours = [...Array(12).keys()].map(i => i + 1); // 1 to 12
             const minutesSeconds = [...Array(60).keys()];
             const milliseconds = [...Array(1000).keys()];
 
@@ -179,8 +179,8 @@
             const endSecond = parseInt(document.getElementById('endSecond').value);
             const endMillisecond = parseInt(document.getElementById('endMillisecond').value);
 
-            const start = new Date(1970, 0, 1, startHour, startMinute, startSecond, startMillisecond);
-            const end = new Date(1970, 0, 1, endHour, endMinute, endSecond, endMillisecond);
+            const start = new Date(1970, 0, 1, startHour === 12 ? 0 : startHour, startMinute, startSecond, startMillisecond); // AM: 12 AM -> 0
+            const end = new Date(1970, 0, 1, endHour === 12 ? 12 : endHour + 12, endMinute, endSecond, endMillisecond); // PM: 12 PM stays 12
 
             const totalDurationMinutes = (end.getTime() - start.getTime()) / 60000;
             const intervalDurationMinutes = totalDurationMinutes / 5;
