@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ta">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jāmam Calculator</title>
+    <title>ஜாமம் கணக்கீடு</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -46,6 +46,11 @@
         }
 
         input[type="time"] {
+            background: #a3c4bc; /* Light greenish-blue */
+            color: #333;
+        }
+
+        input[type="text"] {
             background: #a3c4bc; /* Light greenish-blue */
             color: #333;
         }
@@ -113,11 +118,11 @@
 <body>
 
     <div class="container">
-        <h1>Jāmam Calculator</h1>
-        <p>Enter Start Time and End Time:</p>
-        <input type="time" id="startTime" required>
-        <input type="time" id="endTime" required>
-        <button onclick="calculateJamams()">Calculate 5 Jāmams</button>
+        <h1>ஜாமம் கணக்கீடு</h1>
+        <p>தொடக்க நேரம் மற்றும் முடிவு நேரத்தை உள்ளிடவும்:</p>
+        <input type="text" id="startTime" placeholder="HH:MM:SS.MMM (உதா: 05:49:00.000)" required>
+        <input type="text" id="endTime" placeholder="HH:MM:SS.MMM (உதா: 20:27:00.000)" required>
+        <button onclick="calculateJamams()">5 ஜாமம் கணக்கிடுங்கள்</button>
 
         <div id="results"></div>
         <div id="calculationNotes"></div>
@@ -128,16 +133,16 @@
             let startTime = document.getElementById('startTime').value;
             let endTime = document.getElementById('endTime').value;
             if (!startTime || !endTime) {
-                alert("Please enter both start and end times.");
+                alert("தொடக்க நேரம் மற்றும் முடிவு நேரத்தை உள்ளிடவும்.");
                 return;
             }
 
             // Convert time strings to Date objects
-            let start = new Date(`1970-01-01T${startTime}:00`);
-            let end = new Date(`1970-01-01T${endTime}:00`);
+            let start = parseTime(startTime);
+            let end = parseTime(endTime);
 
             // Calculate the total duration in minutes
-            let totalDurationMinutes = (end.getHours() * 60 + end.getMinutes()) - (start.getHours() * 60 + start.getMinutes());
+            let totalDurationMinutes = (end.getTime() - start.getTime()) / 60000;
 
             // Calculate the duration of each interval (Jāmam) in minutes
             let intervalDurationMinutes = totalDurationMinutes / 5;
@@ -150,11 +155,11 @@
                 let intervalStart = new Date(start.getTime() + i * intervalDurationMinutes * 60000);
                 let intervalEnd = new Date(intervalStart.getTime() + intervalDurationMinutes * 60000);
 
-                // Convert back to time strings with seconds
-                let startStr = intervalStart.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
-                let endStr = intervalEnd.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'});
+                // Convert back to time strings with milliseconds
+                let startStr = intervalStart.toTimeString().slice(0, 12); // HH:MM:SS.MMM
+                let endStr = intervalEnd.toTimeString().slice(0, 12);
 
-                results.push(`<div class="jamam">Jāmam ${i + 1}: ${startStr} - ${endStr}</div>`);
+                results.push(`<div class="jamam">ஜாமம் ${i + 1}: ${startStr} - ${endStr}</div>`);
 
                 // Generate detailed calculation notes for the first Jāmam
                 if (i === 0) {
@@ -168,21 +173,21 @@
 
                     notes.push(`
                         <div class="note">
-                            <strong>Detailed Calculation for Jāmam 1:</strong><br><br>
-                            1. <strong>Start Time:</strong> ${startStr} (This is the time you entered as the start time).<br><br>
-                            2. <strong>Calculate the Total Duration:</strong><br>
-                               &nbsp;&nbsp;End Time: ${end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit', second: '2-digit'})}<br>
-                               &nbsp;&nbsp;Total Duration = End Time - Start Time<br>
-                               &nbsp;&nbsp;= ${totalDurationMinutes} minutes<br>
-                               &nbsp;&nbsp;= ${totalHours} hours and ${totalMinutes} minutes<br><br>
-                            3. <strong>Divide the Total Duration by 5:</strong><br>
-                               &nbsp;&nbsp;Interval Duration = Total Duration / 5<br>
-                               &nbsp;&nbsp;= ${totalDurationMinutes} minutes / 5<br>
-                               &nbsp;&nbsp;= ${intervalDurationMinutes.toFixed(2)} minutes<br>
-                               &nbsp;&nbsp;= ${intervalHours} hours, ${intervalMinutes} minutes, and ${intervalSeconds} seconds<br><br>
-                            4. <strong>Add Interval Duration to Start Time to Find End Time of First Jāmam:</strong><br>
-                               &nbsp;&nbsp;= ${startStr} + ${intervalDurationMinutes.toFixed(2)} minutes<br>
-                               &nbsp;&nbsp;= ${endStr} (This is the end time for Jāmam 1).
+                            <strong>ஜாமம் 1-க்கான விரிவான கணக்கீடு:</strong><br><br>
+                            1. <strong>தொடக்க நேரம்:</strong> ${startStr} (நீங்கள் உள்ளிட்ட தொடக்க நேரம்).<br><br>
+                            2. <strong>மொத்த காலம் கணக்கிடுங்கள்:</strong><br>
+                               &nbsp;&nbsp;முடிவு நேரம்: ${end.toTimeString().slice(0, 12)}<br>
+                               &nbsp;&nbsp;மொத்த காலம் = முடிவு நேரம் - தொடக்க நேரம்<br>
+                               &nbsp;&nbsp;= ${totalDurationMinutes} நிமிடங்கள்<br>
+                               &nbsp;&nbsp;= ${totalHours} மணி ${totalMinutes} நிமிடங்கள்<br><br>
+                            3. <strong>மொத்த காலத்தை 5-ஆகப் பிரிக்கவும்:</strong><br>
+                               &nbsp;&nbsp;ஒவ்வொரு ஜாமம் காலம் = மொத்த காலம் / 5<br>
+                               &nbsp;&nbsp;= ${totalDurationMinutes} நிமிடங்கள் / 5<br>
+                               &nbsp;&nbsp;= ${intervalDurationMinutes.toFixed(2)} நிமிடங்கள்<br>
+                               &nbsp;&nbsp;= ${intervalHours} மணி, ${intervalMinutes} நிமிடங்கள், ${intervalSeconds} விநாடிகள்<br><br>
+                            4. <strong>முதலாவது ஜாமம் முடிவு நேரத்தை கண்டறிய:</strong><br>
+                               &nbsp;&nbsp;= ${startStr} + ${intervalDurationMinutes.toFixed(2)} நிமிடங்கள்<br>
+                               &nbsp;&nbsp;= ${endStr} (இது ஜாமம் 1-க்கான முடிவு நேரம்).
                         </div>
                     `);
                 }
@@ -194,6 +199,12 @@
 
             // Scroll to top of the results section to prevent content cut-off on smaller screens
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function parseTime(timeStr) {
+            const [hours, minutes, seconds, milliseconds] = timeStr.split(/[:.]/).map(Number);
+            const date = new Date(1970, 0, 1, hours, minutes, seconds, milliseconds);
+            return date;
         }
     </script>
 
