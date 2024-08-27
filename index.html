@@ -221,17 +221,16 @@
                     const intervalSeconds = Math.floor((intervalDurationMinutes * 60) % 60);
 
                     notes.push(`
-                        <div class="note">
-                            <strong>ஜாமம் 1-க்கான விரிவான கணக்கீடு:</strong><br><br>
-                            1. <strong>தொடக்க நேரம்:</strong> ${startStr} (நீங்கள் உள்ளிட்ட தொடக்க நேரம்).<br><br>
-                            2. <strong>மொத்த காலம் கணக்கிடுங்கள்:</strong><br>
-                               &nbsp;&nbsp;முடிவு நேரம் - தொடக்க நேரம் = மொத்தம்<br>
-                               &nbsp;&nbsp;${endStr} - ${startStr} = ${totalHours} மணி ${totalMinutes} நிமிடம்.<br><br>
-                            3. <strong>ஒரு ஜாமம் நேரம்:</strong> மொத்த நேரம் / 5.<br>
-                               &nbsp;&nbsp;${totalHours} மணி ${totalMinutes} நிமிடம் = ${intervalHours} மணி ${intervalMinutes} நிமிடம் ${intervalSeconds} விநாடிகள்.<br><br>
-                            4. <strong>ஜாமம் 1:</strong> தொடக்க நேரம் + ஜாமம் நேரம்.<br>
-                               &nbsp;&nbsp;${startStr} + ${intervalHours} மணி ${intervalMinutes} நிமிடம் = ${formatTime(intervalEnd)}.
-                        </div>
+                         <div class="note">
+        <strong>ஜாமம் 1 கணக்கீடு:</strong><br><br>
+        1. <strong>மொத்த நேரம்:</strong> முடிவு நேரம் - தொடக்க நேரம் = மொத்தம்<br>
+           &nbsp;&nbsp;${formatTime(end)} - ${formatTime(start)} = ${totalHours} மணி ${totalMinutes} நிமிடம்.<br><br>
+        2. <strong>ஒரு ஜாமம் நேரம்:</strong> மொத்த நேரம் / 5.<br>
+           &nbsp;&nbsp;${totalHours} மணி ${totalMinutes} நிமிடம் = ${intervalHours} மணி ${intervalMinutes} நிமிடம் ${intervalSeconds} விநாடிகள்.<br>
+           &nbsp;&nbsp;(${formatTime(start)} - ${formatTime(end)}) / 5 = ${intervalHours} மணி ${intervalMinutes} நிமிடம் ${intervalSeconds} விநாடிகள்.<br><br>
+        3. <strong>ஜாமம் 1:</strong> தொடக்க நேரம் + ஜாமம் நேரம்.<br>
+           &nbsp;&nbsp;${formatTime(start)} + ${intervalHours} மணி ${intervalMinutes} நிமிடம் = ${formatTime(intervalEnd)}.
+    </div>
                     `);
                 }
             }
